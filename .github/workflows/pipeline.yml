@@ -51,3 +51,19 @@ jobs:
         run: |
           echo "Развертывание приложения..."
           echo "Приложение успешно развернуто!"
+
+  notify:
+    needs: [test, build, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            🚀 Пайплайн завершен!
+            Статус: ${{ job.status }}
+            Репозиторий: ${{ github.repository }}
+            Автор: ${{ github.actor }}
